@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard | SRC Attendance Pro</title>
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/demo-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .faculty-card { border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-card); padding: 25px; box-shadow: var(--card-shadow); text-decoration: none; color: inherit; display: block; transition: transform 0.2s; }
+        .faculty-card:hover { transform: translateY(-5px); }
+        .profile-hero { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 24px; padding: 40px; color: white; margin-bottom: 30px; position: relative; overflow: hidden; }
+        .profile-hero i.bg-icon { position: absolute; right: -20px; bottom: -20px; font-size: 10rem; opacity: 0.1; transform: rotate(-15deg); }
+        .avatar-lg { width: 100px; height: 100px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+    <!-- Faculty Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-brand">
+            <img src="assets/logo.jpg" alt="Logo" class="sidebar-logo">
+            <span>FACULTY PORTAL</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a href="faculty.html" class="nav-link active">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Overview Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="faculty-scans.html" class="nav-link">
+                    <i class="bi bi-clock-history"></i>
+                    <span>My Attendance Logs</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="faculty-schedule.html" class="nav-link">
+                    <i class="bi bi-calendar3"></i>
+                    <span>Subject Schedule</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="faculty-profile.html" class="nav-link">
+                    <i class="bi bi-person-circle"></i>
+                    <span>My Profile</span>
+                </a>
+            </div>
+
+            <div class="mt-auto py-4">
+                <hr class="mx-3 opacity-25">
+                <div class="nav-item"><a href="index.html" class="nav-link"><i class="bi bi-shield-lock"></i><span>Admin View</span></a></div>
+                <div class="nav-item"><a href="login.html" class="nav-link"><i class="bi bi-box-arrow-left"></i><span>Sign Out</span></a></div>
+            </div>
+        </nav>
+    </aside>
+
+    <div id="content">
+        <div class="top-navbar">
+            <button id="sidebarToggle" class="btn btn-light d-lg-none"><i class="bi bi-list"></i></button>
+            <div class="d-flex align-items-center gap-3">
+                <button id="theme-toggle" class="btn btn-light rounded-circle p-2 shadow-sm" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill text-primary"></i></button>
+                <a href="faculty-profile.html" class="d-flex align-items-center text-decoration-none">
+                    <div class="bg-success text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-weight: 700; font-size: 0.8rem;">RD</div>
+                    <span class="fw-bold text-dark d-none d-sm-inline">Prof. Ricardo Dalisay</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="container-fluid py-2">
+            <div class="profile-hero">
+                <i class="bi bi-person-fill bg-icon"></i>
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <img src="https://ui-avatars.com/api/?name=Ricardo+Dalisay&background=fff&color=4361ee&size=128" class="avatar-lg">
+                    </div>
+                    <div class="col">
+                        <h1 class="fw-extrabold mb-1">Welcome back, Prof. Dalisay!</h1>
+                        <p class="mb-0 opacity-75">You have 4 classes today. Your first scan was at 07:45 AM.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <a href="faculty-scans.html" class="faculty-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-3"><i class="bi bi-calendar-check text-primary fs-4"></i></div>
+                            <h5 class="fw-bold m-0">Weekly Presence</h5>
+                        </div>
+                        <h2 class="fw-bold">96%</h2>
+                        <div class="progress rounded-pill" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: 96%"></div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="faculty-scans.html" class="faculty-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-success bg-opacity-10 p-2 rounded-3"><i class="bi bi-clock-history text-success fs-4"></i></div>
+                            <h5 class="fw-bold m-0">Avg. Clock In</h5>
+                        </div>
+                        <h2 class="fw-bold">07:52 AM</h2>
+                        <p class="small text-muted mb-0">Consistent within grace period.</p>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="faculty-scans.html" class="faculty-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-warning bg-opacity-10 p-2 rounded-3"><i class="bi bi-exclamation-triangle text-warning fs-4"></i></div>
+                            <h5 class="fw-bold m-0">Pending Scans</h5>
+                        </div>
+                        <h2 class="fw-bold text-warning">1</h2>
+                        <p class="small text-muted mb-0">Missing log-out from yesterday.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-2">
+                <div class="col-lg-12">
+                    <div class="faculty-card" style="transform: none !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold">Today's Class Activity</h5>
+                            <a href="faculty-schedule.html" class="small text-primary fw-bold text-decoration-none">Full Schedule <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="text-muted">
+                                    <tr style="font-size: 0.75rem;">
+                                        <th>Subject</th>
+                                        <th>Schedule</th>
+                                        <th>Room</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="fw-bold">Web Development 1</span></td>
+                                        <td>08:00 AM - 10:00 AM</td>
+                                        <td>Lab 301</td>
+                                        <td><span class="badge bg-success rounded-pill">COMPLETED</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="fw-bold">Database Systems</span></td>
+                                        <td>10:30 AM - 12:30 PM</td>
+                                        <td>Room 102</td>
+                                        <td><span class="badge bg-info rounded-pill">IN PROGRESS</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="fw-bold">Machine Learning</span></td>
+                                        <td>01:30 PM - 03:30 PM</td>
+                                        <td>Lab 405</td>
+                                        <td><span class="badge bg-light text-muted rounded-pill">UPCOMING</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#sidebarToggle').click(function() { $('#sidebar').toggleClass('show'); });
+            $('#theme-toggle').click(function() {
+                const body = $('html'); if (body.attr('data-theme') === 'light') body.attr('data-theme', 'dark'); else body.attr('data-theme', 'light');
+            });
+        });
+    </script>
+</body>
+</html>

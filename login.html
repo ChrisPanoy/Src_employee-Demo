@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | SRC Attendance Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #2f0deeff 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+        }
+        .login-card { 
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 45px 40px;
+            border-radius: 24px; 
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); 
+        }
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.25);
+            border: 4px solid rgba(67, 97, 238, 0.1);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-container img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .brand-subtitle {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 35px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            padding: 13px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.08);
+            outline: none;
+        }
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: white;
+            box-shadow: 0 8px 16px rgba(67, 97, 238, 0.3);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(67, 97, 238, 0.4);
+        }
+        .demo-notice {
+            background: #fff8e1;
+            color: #b45309;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #fef3c7;
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        a { color: var(--primary); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="demo-notice">
+            <i class="bi bi-info-circle-fill"></i> STATIC PRESENTATION MODE
+        </div>
+        <div class="logo-container">
+            <img src="assets/logo.jpg" alt="Brand Logo">
+        </div>
+        <div class="brand-title">SRC ATTENDANCE PRO</div>
+        <div class="brand-subtitle">Administrator Portal</div>
+
+        <form onsubmit="event.preventDefault(); window.location.href='index.html';">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" placeholder="Enter username" value="admin" disabled>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" placeholder="Enter password" value="••••••••" disabled>
+            </div>
+            <button type="submit" class="btn-login">
+                <i class="bi bi-shield-lock me-2"></i>Sign In to System
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="index.html" style="font-size: 0.85rem;"><i class="bi bi-arrow-left me-1"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="footer-text">
+            Developed by: SSITE Inovators
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Scans | SRC Attendance Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/demo-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .review-card { border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-card); overflow: hidden; margin-bottom: 20px; box-shadow: var(--card-shadow); transition: transform 0.2s; }
+        .review-card:hover { transform: scale(1.01); }
+        .review-img { width: 120px; height: 120px; object-fit: cover; border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <aside id="sidebar">
+        <div class="sidebar-brand">
+            <img src="assets/logo.jpg" alt="Logo" class="sidebar-logo">
+            <span>SRC ATTENDANCE PRO</span>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item"><a href="index.html" class="nav-link"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="admin-audit.html" class="nav-link"><i class="bi bi-journal-text"></i><span>Audit Logs</span></a></div>
+            <div class="nav-item"><a href="admin-employees.html" class="nav-link"><i class="bi bi-people"></i><span>Employees</span></a></div>
+            <div class="nav-item"><a href="admin-sync.html" class="nav-link"><i class="bi bi-cloud-download"></i><span>MSSQL Sync</span></a></div>
+            <div class="nav-item"><a href="admin-status.html" class="nav-link"><i class="bi bi-sliders"></i><span>Status Control</span></a></div>
+            <div class="nav-item"><a href="admin-review.html" class="nav-link active d-flex justify-content-between align-items-center"><div><i class="bi bi-bell"></i><span>Review Scans</span></div><span class="badge bg-danger rounded-pill">3</span></a></div>
+            <div class="nav-item"><a href="admin-reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i><span>Reports</span></a></div>
+            <div class="nav-item"><a href="faculty.html" class="nav-link"><i class="bi bi-people"></i><span>Faculty Portal</span></a></div>
+            <div class="nav-item"><a href="login.html" class="nav-link"><i class="bi bi-lock"></i><span>Login View</span></a></div>
+            <div class="mt-auto py-4"><hr class="mx-3 opacity-25"><div class="nav-item"><a href="live.html" class="nav-link"><i class="bi bi-display"></i><span>Live Board</span></a></div></div>
+        </nav>
+    </aside>
+
+    <div id="content">
+        <div class="top-navbar">
+            <button id="sidebarToggle" class="btn btn-light d-lg-none"><i class="bi bi-list"></i></button>
+            <div class="d-flex align-items-center gap-3">
+                <button id="theme-toggle" class="btn btn-light rounded-circle p-2 shadow-sm" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill text-primary"></i></button>
+            </div>
+        </div>
+
+        <div class="container-fluid py-2">
+            <div class="welcome-section">
+                <h1>Review Flagged Scans</h1>
+                <p>Verify manual scans that require administrative approval or corrections.</p>
+            </div>
+
+            <div class="review-card p-3">
+                <div class="d-flex gap-4 align-items-center">
+                    <img src="https://ui-avatars.com/api/?name=Unknown+Tag&background=f1f5f9&color=dc3545&size=128" class="review-img">
+                    <div class="flex-grow-1">
+                        <div class="badge bg-danger mb-2">UNRECOGNIZED TAG</div>
+                        <h5 class="fw-bold mb-1">Unknown RFID Attempt</h5>
+                        <p class="small text-muted mb-0">Tag Serial: <code class="text-danger">0012345678</code></p>
+                        <p class="small text-muted">Time: 10:45 AM | Terminal: Front Desk</p>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <button class="btn btn-primary btn-sm px-4">Assign Member</button>
+                        <button class="btn btn-light btn-sm px-4 text-danger">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-card p-3">
+                <div class="d-flex gap-4 align-items-center">
+                    <img src="https://ui-avatars.com/api/?name=Juan+Luna&background=f1f5f9&color=4361ee&size=128" class="review-img">
+                    <div class="flex-grow-1">
+                        <div class="badge bg-warning text-dark mb-2">MANUAL OVERRIDE REQ</div>
+                        <h5 class="fw-bold mb-1">Juan Luna</h5>
+                        <p class="small text-muted mb-0">Missing Time-Out for 2026-03-15</p>
+                        <p class="small text-muted">Requested Time: 05:00 PM</p>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <button class="btn btn-success btn-sm px-4">Approve</button>
+                        <button class="btn btn-light btn-sm px-4 text-danger">Deny</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#sidebarToggle').click(function() { $('#sidebar').toggleClass('show'); });
+            $('#theme-toggle').click(function() {
+                const body = $('html');
+                if (body.attr('data-theme') === 'light') body.attr('data-theme', 'dark');
+                else body.attr('data-theme', 'light');
+            });
+        });
+    </script>
+</body>
+</html>
