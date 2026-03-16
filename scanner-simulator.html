@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner Simulator | SRC Attendance Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/demo-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .scanner-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .scanner-view {
+            background: #000;
+            border-radius: 24px;
+            aspect-ratio: 16/9;
+            position: relative;
+            overflow: hidden;
+            border: 8px solid var(--border-color);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(67, 97, 238, 0.5);
+            box-shadow: 0 0 15px var(--primary);
+            top: 0;
+            animation: scan 3s linear infinite;
+            z-index: 2;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        .scanner-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.4) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        .camera-corners {
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            border: 2px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+        .camera-corners::before, .camera-corners::after,
+        .camera-corners span::before, .camera-corners span::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--primary);
+            border-style: solid;
+        }
+        .camera-corners::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .camera-corners::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+        .camera-corners span::before { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .camera-corners span::after { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        .result-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            padding: 15px 30px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            z-index: 10;
+        }
+        .result-overlay.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .result-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .control-panel {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-top: 24px;
+        }
+        .mock-tag-btn {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: left;
+            transition: all 0.2s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .mock-tag-btn:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .recent-scans-mini {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            height: 100%;
+        }
+        .mini-scan-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .mini-scan-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="sidebar-brand">
+            <img src="assets/logo.jpg" alt="Logo" class="sidebar-logo">
+            <span>SRC ATTENDANCE PRO</span>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item"><a href="index.html" class="nav-link"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="scanner-simulator.html" class="nav-link active"><i class="bi bi-qr-code-scan"></i><span>Scanner Simulator</span></a></div>
+            <div class="nav-item"><a href="recent-scans.html" class="nav-link"><i class="bi bi-clock-history"></i><span>Recent Scans</span></a></div>
+            <div class="nav-item"><a href="admin-audit.html" class="nav-link"><i class="bi bi-journal-text"></i><span>Audit Logs</span></a></div>
+            <div class="nav-item"><a href="admin-employees.html" class="nav-link"><i class="bi bi-people"></i><span>Employees</span></a></div>
+            <div class="nav-item"><a href="faculty.html" class="nav-link"><i class="bi bi-person-workspace"></i><span>Faculty Portal</span></a></div>
+            <div class="mt-auto py-4">
+                <hr class="mx-3 opacity-25">
+                <div class="nav-item"><a href="live.html" class="nav-link"><i class="bi bi-display"></i><span>Live Board</span></a></div>
+            </div>
+        </nav>
+    </aside>
+
+    <div id="content">
+        <div class="top-navbar">
+            <button id="sidebarToggle" class="btn btn-light d-lg-none"><i class="bi bi-list"></i></button>
+            <div class="d-flex align-items-center gap-3">
+                <div id="scanner-status" class="badge bg-success rounded-pill px-3 py-2">
+                    <i class="bi bi-hdd-network me-1"></i> SCANNER ONLINE
+                </div>
+                <button id="theme-toggle" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill text-primary"></i></button>
+            </div>
+        </div>
+
+        <div class="container-fluid py-2">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="welcome-section mb-4">
+                        <h1>Scanner Simulator</h1>
+                        <p>Simulate hardware tag/QR scanning for demonstration purposes.</p>
+                    </div>
+
+                    <div class="scanner-view">
+                        <div class="scan-line"></div>
+                        <div class="scanner-overlay">
+                            <div class="camera-corners"><span></span></div>
+                            <div id="scan-feedback" class="text-white opacity-25">
+                                <i class="bi bi-qr-code-scan" style="font-size: 5rem;"></i>
+                            </div>
+                        </div>
+
+                        <div id="result-overlay" class="result-overlay">
+                            <img id="res-avatar" src="" class="result-avatar" alt="">
+                            <div>
+                                <h6 id="res-name" class="fw-bold mb-0"></h6>
+                                <p id="res-status" class="small mb-0 text-muted"></p>
+                            </div>
+                            <div id="res-dot" class="status-dot"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-panel">
+                        <h5 class="fw-bold mb-3">Mock Interaction Controls</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="small fw-bold text-muted mb-2 d-block">CHOOSE MOCK USER</label>
+                                <button class="mock-tag-btn" onclick="simulateScan('8812345')">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold">Prof. Ricardo Dalisay</div>
+                                            <div class="small text-muted">Tag: 8812345 (Faculty)</div>
+                                        </div>
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </button>
+                                <button class="mock-tag-btn" onclick="simulateScan('7723456')">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold">Maria Clara</div>
+                                            <div class="small text-muted">Tag: 7723456 (Staff)</div>
+                                        </div>
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </button>
+                                <button class="mock-tag-btn" onclick="simulateScan('unknown')">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold text-danger">Unregistered Tag</div>
+                                            <div class="small text-muted">Tag: 9900112</div>
+                                        </div>
+                                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold text-muted mb-2 d-block">MANUAL INPUT</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" id="manual-tag" class="form-control rounded-start-4" placeholder="Enter Tag ID...">
+                                    <button class="btn btn-primary rounded-end-4 px-4" onclick="simulateScan($('#manual-tag').val())">SCAN</button>
+                                </div>
+                                <div class="alert alert-info rounded-4 small border-0">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Scanning will trigger a "Clock-In" or "Clock-Out" event based on the user's previous state in local storage.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="recent-scans-mini shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold m-0">Recent Scans</h5>
+                            <a href="recent-scans.html" class="btn btn-sm btn-light rounded-pill px-3">View All</a>
+                        </div>
+                        <div id="recent-list-mini">
+                            <!-- Items populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="beep-success" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="beep-error" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const MOCK_DATA = {
+            '8812345': { name: 'Prof. Ricardo Dalisay', role: 'Faculty', dept: 'Computer Science', avatar: 'https://ui-avatars.com/api/?name=Ricardo+Dalisay&background=4361ee&color=fff' },
+            '7723456': { name: 'Maria Clara', role: 'Staff', dept: 'HR Department', avatar: 'https://ui-avatars.com/api/?name=Maria+Clara&background=success&color=fff' },
+            '6634567': { name: 'Juan Luna', role: 'Faculty', dept: 'Art & Design', avatar: 'https://ui-avatars.com/api/?name=Juan+Luna&background=info&color=fff' }
+        };
+
+        function simulateScan(tagId) {
+            if (!tagId) return;
+            
+            // Visual feedback
+            $('.scan-line').css('animation-duration', '0.5s');
+            $('#scan-feedback').removeClass('opacity-25').addClass('opacity-100 text-primary');
+            
+            setTimeout(() => {
+                const user = MOCK_DATA[tagId];
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                let scanResult = {
+                    tag: tagId,
+                    timestamp: now.toISOString(),
+                    timeLabel: timeStr,
+                    success: !!user
+                };
+
+                if (user) {
+                    document.getElementById('beep-success').play();
+                    $('#res-avatar').attr('src', user.avatar);
+                    $('#res-name').text(user.name);
+                    
+                    // Toggle In/Out logic using localized "database" (localStorage)
+                    let userState = localStorage.getItem('user_state_' + tagId) || 'OUT';
+                    let newState = (userState === 'OUT') ? 'IN' : 'OUT';
+                    localStorage.setItem('user_state_' + tagId, newState);
+                    
+                    $('#res-status').text(`${newState} at ${timeStr}`);
+                    $('#res-dot').removeClass('bg-danger bg-success').addClass(newState === 'IN' ? 'bg-success' : 'bg-primary');
+                    
+                    scanResult.name = user.name;
+                    scanResult.status = newState;
+                    scanResult.avatar = user.avatar;
+                } else {
+                    document.getElementById('beep-error').play();
+                    $('#res-avatar').attr('src', 'https://ui-avatars.com/api/?name=Unknown&background=dc3545&color=fff');
+                    $('#res-name').text('UNRECOGNIZED TAG');
+                    $('#res-status').text('Access Denied');
+                    $('#res-dot').removeClass('bg-success bg-primary').addClass('bg-danger');
+                    
+                    scanResult.name = 'Unknown User';
+                    scanResult.status = 'DENIED';
+                    scanResult.avatar = 'https://ui-avatars.com/api/?name=?&background=333&color=fff';
+                }
+
+                $('#result-overlay').addClass('show');
+                saveScan(scanResult);
+                updateMiniList();
+
+                setTimeout(() => {
+                    $('#result-overlay').removeClass('show');
+                    $('.scan-line').css('animation-duration', '3s');
+                    $('#scan-feedback').addClass('opacity-25').removeClass('opacity-100 text-primary');
+                }, 3000);
+            }, 800);
+        }
+
+        function saveScan(data) {
+            let scans = JSON.parse(localStorage.getItem('demo_scans') || '[]');
+            scans.unshift(data);
+            localStorage.setItem('demo_scans', JSON.stringify(scans.slice(0, 50))); // Keep last 50
+        }
+
+        function updateMiniList() {
+            let scans = JSON.parse(localStorage.getItem('demo_scans') || '[]');
+            
+            // Seed data if empty
+            if (scans.length === 0) {
+                scans = [
+                    { name: 'Prof. Ricardo Dalisay', tag: '8812345', timeLabel: '08:15 AM', status: 'IN', avatar: 'https://ui-avatars.com/api/?name=Ricardo+Dalisay&background=4361ee&color=fff' },
+                    { name: 'Maria Clara', tag: '7723456', timeLabel: '08:10 AM', status: 'IN', avatar: 'https://ui-avatars.com/api/?name=Maria+Clara&background=success&color=fff' },
+                    { name: 'Juan Luna', tag: '6634567', timeLabel: '07:55 AM', status: 'IN', avatar: 'https://ui-avatars.com/api/?name=Juan+Luna&background=info&color=fff' }
+                ];
+                localStorage.setItem('demo_scans', JSON.stringify(scans));
+            }
+
+            let html = '';
+            scans.slice(0, 5).forEach(s => {
+                const statusClass = s.status === 'IN' ? 'text-success' : (s.status === 'OUT' ? 'text-primary' : 'text-danger');
+                html += `
+                    <div class="mini-scan-item">
+                        <img src="${s.avatar}" class="rounded-circle" width="32" height="32">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold">${s.name}</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">${s.timeLabel}</div>
+                        </div>
+                        <div class="small fw-extrabold ${statusClass}">${s.status}</div>
+                    </div>
+                `;
+            });
+            $('#recent-list-mini').html(html || '<p class="text-center text-muted py-4 small">No scans today yet.</p>');
+        }
+
+        $(document).ready(function() {
+            updateMiniList();
+            $('#sidebarToggle').click(function() { $('#sidebar').toggleClass('show'); });
+            $('#theme-toggle').click(function() {
+                const body = $('html');
+                if (body.attr('data-theme') === 'light') body.attr('data-theme', 'dark');
+                else body.attr('data-theme', 'light');
+            });
+        });
+    </script>
+</body>
+</html>

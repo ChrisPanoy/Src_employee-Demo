@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Scans | SRC Attendance Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/demo-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .scans-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+        .scan-row {
+            transition: background 0.2s;
+        }
+        .scan-row:hover {
+            background: rgba(67, 97, 238, 0.02);
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+        .badge-in { background: rgba(25, 135, 84, 0.1); color: #198754; }
+        .badge-out { background: rgba(67, 97, 238, 0.1); color: #4361ee; }
+        .badge-denied { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="sidebar-brand">
+            <img src="assets/logo.jpg" alt="Logo" class="sidebar-logo">
+            <span>SRC ATTENDANCE PRO</span>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item"><a href="index.html" class="nav-link"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="scanner-simulator.html" class="nav-link"><i class="bi bi-qr-code-scan"></i><span>Scanner Simulator</span></a></div>
+            <div class="nav-item"><a href="recent-scans.html" class="nav-link active"><i class="bi bi-clock-history"></i><span>Recent Scans</span></a></div>
+            <div class="nav-item"><a href="admin-audit.html" class="nav-link"><i class="bi bi-journal-text"></i><span>Audit Logs</span></a></div>
+            <div class="nav-item"><a href="admin-employees.html" class="nav-link"><i class="bi bi-people"></i><span>Employees</span></a></div>
+            <div class="nav-item"><a href="faculty.html" class="nav-link"><i class="bi bi-person-workspace"></i><span>Faculty Portal</span></a></div>
+            <div class="mt-auto py-4">
+                <hr class="mx-3 opacity-25">
+                <div class="nav-item"><a href="live.html" class="nav-link"><i class="bi bi-display"></i><span>Live Board</span></a></div>
+            </div>
+        </nav>
+    </aside>
+
+    <div id="content">
+        <div class="top-navbar">
+            <button id="sidebarToggle" class="btn btn-light d-lg-none"><i class="bi bi-list"></i></button>
+            <div class="d-flex align-items-center gap-3">
+                <button id="clear-scans" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                    <i class="bi bi-trash3 me-1"></i> Clear History
+                </button>
+                <button id="theme-toggle" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill text-primary"></i></button>
+            </div>
+        </div>
+
+        <div class="container-fluid py-2">
+            <div class="welcome-section mb-4">
+                <h1>Recent Scans History</h1>
+                <p>Detailed log of all simulated scan attempts for this session.</p>
+            </div>
+
+            <div class="scans-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="text-muted small">
+                                <th>PERSONNEL</th>
+                                <th>TAG ID</th>
+                                <th>TIME</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scans-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function renderScans() {
+            let scans = JSON.parse(localStorage.getItem('demo_scans') || '[]');
+            
+            // Seed data if empty
+            if (scans.length === 0) {
+                scans = [
+                    { name: 'Prof. Ricardo Dalisay', tag: '8812345', timeLabel: '08:15 AM', status: 'IN', avatar: 'https://ui-avatars.com/api/?name=Ricardo+Dalisay&background=4361ee&color=fff' },
+                    { name: 'Maria Clara', tag: '7723456', timeLabel: '08:10 AM', status: 'IN', avatar: 'https://ui-avatars.com/api/?name=Maria+Clara&background=success&color=fff' },
+                    { name: 'Juan Luna', tag: '6634567', timeLabel: '07:55 AM', status: 'IN', avatar: 'https://ui-avatars.com/api/?name=Juan+Luna&background=info&color=fff' }
+                ];
+                localStorage.setItem('demo_scans', JSON.stringify(scans));
+            }
+
+            let html = '';
+            
+            scans.forEach((s, index) => {
+                const statusBadge = s.status === 'IN' ? 'badge-in' : (s.status === 'OUT' ? 'badge-out' : 'badge-denied');
+                html += `
+                    <tr class="scan-row">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="${s.avatar}" class="rounded-circle" width="40" height="40">
+                                <div>
+                                    <div class="fw-bold">${s.name}</div>
+                                    <div class="small text-muted">${s.status === 'DENIED' ? 'Unknown Tag' : 'Authorized'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><code class="text-primary">${s.tag}</code></td>
+                        <td>${s.timeLabel}</td>
+                        <td><span class="status-badge ${statusBadge}">${s.status}</span></td>
+                        <td>
+                            <button class="btn btn-light btn-sm rounded-circle" style="width: 32px; height: 32px;"><i class="bi bi-three-dots-vertical"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if (scans.length === 0) {
+                html = '<tr><td colspan="5" class="text-center py-5 text-muted">No scan logs found. Start scanning in the <a href="scanner-simulator.html">Simulator</a>.</td></tr>';
+            }
+            
+            $('#scans-table-body').html(html);
+        }
+
+        $(document).ready(function() {
+            renderScans();
+            
+            $('#clear-scans').click(function() {
+                if(confirm('Clear all demo scan history?')) {
+                    localStorage.removeItem('demo_scans');
+                    renderScans();
+                }
+            });
+
+            $('#sidebarToggle').click(function() { $('#sidebar').toggleClass('show'); });
+            $('#theme-toggle').click(function() {
+                const body = $('html');
+                if (body.attr('data-theme') === 'light') body.attr('data-theme', 'dark');
+                else body.attr('data-theme', 'light');
+            });
+        });
+    </script>
+</body>
+</html>
