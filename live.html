@@ -1,36 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Monitoring | SRC Attendance Pro</title>
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="css/demo-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --color-in: #10b981;
+            --color-out: #ef4444;
+            --color-outside: #f59e0b;
+            --color-official: #3b82f6;
+            --color-early-out: #40e0d0;
+            --color-personal-exceeded: #ec4899;
+            --glow-in: rgba(16, 185, 129, 0.15);
+            --glow-official: rgba(59,130,246,0.15);
+            --glow-exceeded: rgba(236,72,153,0.15);
+            --header-bg: linear-gradient(to right, #ffffff, #f1f5f9);
+            --border-color: #e2e8f0;
+            --grid-cols: 10;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0a0e14;
+            --bg-card: #151b23;
+            --text-main: #ffffff;
+            --text-dim: #8b949e;
+            --color-in: #238636;
+            --color-out: #da3633;
+            --color-outside: #d29922;
+            --color-official: #1f6feb;
+            --color-personal-exceeded: #d63384;
+            --glow-in: rgba(35, 134, 54, 0.4);
+            --glow-official: rgba(31,111,235,0.3);
+            --glow-exceeded: rgba(214,51,132,0.3);
+            --header-bg: linear-gradient(to right, #161b22, #0d1117);
+            --border-color: #30363d;
+        }
+
         body {
-            background-color: #0d1117;
-            color: white;
-            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow: hidden;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            font-family: 'Outfit', sans-serif;
         }
 
         header {
             height: 80px;
             padding: 0 40px;
-            background: linear-gradient(to right, #161b22, #0d1117);
+            background: var(--header-bg);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #30363d;
+            border-bottom: 2px solid var(--border-color);
             flex-shrink: 0;
+            z-index: 100;
         }
 
         .title-group h1 {
@@ -38,288 +74,328 @@
             font-weight: 800;
             color: #58a6ff;
             margin: 0;
-            letter-spacing: 1px;
+            letter-spacing: -1px;
         }
 
-        .header-right { display: flex; align-items: center; gap: 30px; }
-        .live-clock { text-align: right; }
-        #current-time { font-size: 2.2rem; font-weight: 800; display: block; line-height: 1; }
-        #current-date { color: #8b949e; font-size: 1rem; font-weight: 600; text-transform: uppercase; }
+        .header-right { display: flex; align-items: center; gap: 25px; }
+        .live-clock { text-align: right; min-width: 200px; }
+        #current-time { font-size: 2rem; font-weight: 800; display: block; line-height: 1; }
+        #current-date { color: var(--text-dim); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
 
         .summary-bar {
-            background: #151b23;
-            padding: 12px 40px;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            border-bottom: 1px solid #30363d;
+            padding: 10px 40px;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border-color);
+            gap: 15px;
+            z-index: 90;
         }
 
         .summary-card {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 8px 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            padding: 6px 15px;
+            border-radius: 12px;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+            cursor: pointer;
         }
+        .summary-card:hover { transform: translateY(-2px); border-color: #58a6ff; }
+        .summary-card.active { background: #58a6ff; color: white; border-color: #58a6ff; }
+        .summary-card.active .summary-label, .summary-card.active .summary-count { color: white; }
 
         .summary-icon {
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: white;
         }
-
         .s-total .summary-icon { background: #58a6ff; }
-        .s-in .summary-icon { background: #238636; }
-        .s-out .summary-icon { background: #da3633; }
-        .s-official .summary-icon { background: #1f6feb; }
+        .s-in .summary-icon { background: var(--color-in); }
+        .s-out .summary-icon { background: var(--color-out); }
+        .s-official .summary-icon { background: var(--color-official); }
+        .s-personal .summary-icon { background: var(--color-personal-exceeded); }
 
-        .summary-count { font-size: 1.4rem; font-weight: 800; }
-        .summary-label { font-size: 0.65rem; color: #8b949e; font-weight: 800; text-transform: uppercase; }
+        .summary-info { display: flex; flex-direction: column; }
+        .summary-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); }
+        .summary-count { font-size: 1.2rem; font-weight: 800; line-height: 1; }
 
-        /* Exact TV Grid Layout */
-        .tv-grid {
+        main {
+            flex: 1;
+            padding: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-grid {
             display: grid;
-            grid-template-columns: repeat(20, 1fr);
+            grid-template-columns: repeat(10, 1fr);
             grid-template-rows: repeat(4, 1fr);
             gap: 8px;
-            padding: 15px;
             flex: 1;
-            background: #0d1117;
         }
 
-        .tv-card {
-            background: #151b23;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 8px 4px;
+        .emp-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            text-align: center;
             position: relative;
-            transition: transform 0.2s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            overflow: visible; /* To allow popup */
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
         }
+        .emp-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 10; border-color: #58a6ff; }
 
-        .tv-card:hover {
-            transform: translateY(-5px) scale(1.05);
-            z-index: 1000;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border-color: #58a6ff;
-        }
-
-        .tv-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            border-radius: 10px 10px 0 0;
-            background: #30363d;
-        }
-
-        .tv-card.status-in::before { background: #238636; }
-        .tv-card.status-out::before { background: #da3633; }
-        .tv-card.status-official::before { background: #1f6feb; }
+        .emp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 12px 12px 0 0; background: #94a3b8; }
+        .status-in::before { background: var(--color-in); }
+        .status-out::before { background: var(--color-out); }
+        .status-official::before { background: var(--color-official); }
+        .status-personal::before { background: #f97316; }
+        .status-exceeded::before { background: var(--color-personal-exceeded); }
 
         .profile-ring {
-            width: 45px;
-            height: 45px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
-            border: 2px solid #30363d;
+            border: 3px solid var(--border-color);
             overflow: hidden;
-            margin-bottom: 5px;
-            background: #0d1117;
+            margin-bottom: 6px;
+            background: var(--bg-body);
+            transition: border-color 0.2s;
         }
+        .status-in .profile-ring { border-color: var(--color-in); }
+        .status-official .profile-ring { border-color: var(--color-official); }
+        .status-personal .profile-ring { border-color: #f97316; }
+        .status-exceeded .profile-ring { border-color: var(--color-personal-exceeded); }
 
-        .profile-ring i { font-size: 2.2rem; color: #30363d; line-height: 45px; }
+        .profile-pic { width: 100%; height: 100%; object-fit: cover; }
 
-        .status-in .profile-ring { border-color: #238636; }
-        .status-out .profile-ring { border-color: #da3633; }
-
-        .tv-name {
-            font-size: 0.68rem;
+        .emp-name { font-size: 0.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 2px; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .emp-dept { font-size: 0.6rem; font-weight: 700; color: #58a6ff; text-transform: uppercase; margin-bottom: 4px; }
+        
+        .status-badge {
+            font-size: 0.55rem;
             font-weight: 800;
-            color: white;
-            text-align: center;
-            line-height: 1.1;
-            width: 100%;
-            white-space: normal;
-            word-wrap: break-word;
-            margin-bottom: 2px;
-        }
-
-        .tv-dept {
-            font-size: 0.45rem;
-            color: #58a6ff;
-            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
             text-transform: uppercase;
+            margin-bottom: 4px;
         }
+        .bg-in { background: var(--color-in); color: white; }
+        .bg-out { background: var(--color-out); color: white; }
+        .bg-official { background: var(--color-official); color: white; }
+        .bg-personal { background: #f97316; color: white; }
+        .bg-exceeded { background: var(--color-personal-exceeded); color: white; }
 
-        /* Hover Popup */
-        .time-popup {
+        .time-label { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); background: rgba(0,0,0,0.05); padding: 1px 8px; border-radius: 4px; }
+
+        /* Hover Tooltip */
+        .time-records-popup {
             position: absolute;
-            bottom: calc(100% + 15px);
-            left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            width: 170px;
-            background: #0f172a;
-            border-radius: 12px;
+            inset: 0;
+            background: var(--bg-card);
             padding: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .tv-card:hover .time-popup {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .popup-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .popup-row:last-child { border-bottom: none; }
-        .popup-label { font-size: 0.6rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
-        .popup-time { font-size: 0.85rem; font-weight: 800; color: #58a6ff; }
-
-        /* Launcher */
-        #launcher {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1e293b, #0f172a);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            cursor: pointer;
+            gap: 8px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: 5;
+            text-align: left;
         }
+        .emp-card:hover .time-records-popup { transform: translateY(0); }
+        .record-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        .record-item:last-child { border-bottom: none; }
+        .record-label { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-dim); }
+        .record-time { font-size: 0.85rem; font-weight: 800; color: #58a6ff; }
 
-        .launch-btn {
-            background: #58a6ff;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 1.5rem;
-            border: none;
-            box-shadow: 0 10px 20px rgba(88, 166, 255, 0.3);
-            transition: transform 0.2s;
-        }
+        /* Controls */
+        .monitor-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; }
+        .monitor-btn:hover { background: #58a6ff; color: white; transform: scale(1.1); }
 
-        .launch-btn:hover { transform: scale(1.05); }
+        .tv-legend { display: flex; gap: 15px; margin-right: 20px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; color: var(--text-dim); }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot-in { background: var(--color-in); }
+        .dot-out { background: var(--color-out); }
+        .dot-official { background: var(--color-official); }
+        .dot-personal { background: #f97316; }
+        .dot-exceeded { background: var(--color-personal-exceeded); }
 
-        /* Tooltip Arrow */
-        .time-popup::after {
-            content: '';
-            position: absolute;
-            bottom: -6px; left: 50%;
-            transform: translateX(-50%);
-            width: 12px; height: 6px;
-            background: #0f172a;
-            clip-path: polygon(0 0, 100% 0, 50% 100%);
-        }
+        /* Modes */
+        body.mode-personal .emp-card:not(.status-personal):not(.status-exceeded) { display: none; }
+        body.mode-official .emp-card:not(.status-official) { display: none; }
+        body.mode-in .emp-card:not(.status-in) { display: none; }
+        body.mode-out .emp-card:not(.status-out) { display: none; }
 
-        .demo-back {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(88, 166, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid rgba(88, 166, 255, 0.2);
-            color: white;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.8rem;
-            z-index: 1001;
-            transition: all 0.3s;
-        }
+        /* Animation */
+        .animate-up { animation: fadeInUp 0.5s ease forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Fullscreen Overlay */
+        #launcher { position: fixed; inset: 0; background: radial-gradient(circle at center, #1e293b, #0f172a); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .launch-icon { width: 100px; height: 100px; background: rgba(88,166,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: #58a6ff; margin-bottom: 20px; border: 2px solid rgba(88,166,255,0.3); }
+
+        .demo-back { position: fixed; bottom: 20px; right: 20px; background: rgba(88,166,255,0.1); backdrop-filter: blur(10px); padding: 8px 18px; border-radius: 30px; border: 1px solid rgba(88,166,255,0.2); color: white; text-decoration: none; font-weight: 700; font-size: 0.8rem; z-index: 1001; transition: all 0.3s; }
         .demo-back:hover { background: #58a6ff; }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
-    <!-- Launcher -->
-    <div id="launcher" onclick="launchTV()">
-        <div style="text-align: center; margin-bottom: 30px;">
-            <i class="bi bi-display" style="font-size: 6rem; color: #58a6ff;"></i>
-            <h1 style="color: white; font-weight: 800; font-size: 2.5rem; margin-top: 10px;">SRC LIVE BOARD</h1>
-            <p style="color: rgba(255,255,255,0.5); font-weight: 600; letter-spacing: 2px;">IMMERSIVE MONITORING INITIALIZED</p>
+    <div id="launcher" onclick="startDemo()">
+        <div class="launch-icon animate__animated animate__pulse animate__infinite">
+            <i class="bi bi-display"></i>
         </div>
-        <button class="launch-btn">INITIALIZE TV MODE</button>
-        <p style="color: #64748b; margin-top: 20px; font-weight: 700; font-size: 0.9rem;">CLICK ANYWHERE TO START</p>
+        <h2 class="text-white fw-bold mb-1">SRC LIVE BOARD</h2>
+        <p class="text-white-50 mb-4 fw-bold letter-spacing-2">IMMERSIVE MONITORING INITIALIZED</p>
+        <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg">INITIALIZE TV MODE</button>
     </div>
 
     <header>
         <div class="title-group">
             <h1>LIVE ATTENDANCE BOARD</h1>
+            <p class="small text-muted fw-bold d-none d-md-block" style="letter-spacing: 2px; margin-top: -5px;">REAL-TIME EMPLOYEE MONITORING</p>
         </div>
-        <div class="live-clock">
-            <span id="current-time">00:00:00</span>
-            <span id="current-date">Fetching...</span>
+        <div class="header-right">
+            <div class="tv-legend d-none d-lg-flex">
+                <div class="legend-item"><span class="legend-dot dot-in"></span> IN</div>
+                <div class="legend-item"><span class="legend-dot dot-out"></span> OUT</div>
+                <div class="legend-item"><span class="legend-dot dot-official"></span> OFFICIAL</div>
+                <div class="legend-item"><span class="legend-dot dot-personal"></span> PERSONAL</div>
+            </div>
+            <div class="live-clock">
+                <span id="current-time">00:00:00</span>
+                <span id="current-date">Fetching date...</span>
+            </div>
+            <button class="monitor-btn" onclick="toggleTheme()" title="Toggle Theme">
+                <i class="bi bi-moon-stars-fill" id="theme-icon"></i>
+            </button>
+            <button class="monitor-btn" onclick="toggleFullScreen()" title="Toggle Fullscreen">
+                <i class="bi bi-arrows-fullscreen"></i>
+            </button>
         </div>
     </header>
 
     <div class="summary-bar">
-        <div class="summary-card s-total">
+        <div class="summary-card s-total active" onclick="setFilter('all')">
             <div class="summary-icon"><i class="bi bi-people-fill"></i></div>
             <div class="summary-info">
-                <div class="summary-label">TOTAL STAFF</div>
-                <div class="summary-count">124</div>
+                <span class="summary-label">Total</span>
+                <span class="summary-count" id="count-total">40</span>
             </div>
         </div>
-        <div class="summary-card s-in">
-            <div class="summary-icon"><i class="bi bi-geo-fill"></i></div>
+        <div class="summary-card s-in" onclick="setFilter('in')">
+            <div class="summary-icon"><i class="bi bi-check-lg"></i></div>
             <div class="summary-info">
-                <div class="summary-label">INSIDE</div>
-                <div class="summary-count">98</div>
+                <span class="summary-label">Present</span>
+                <span class="summary-count" id="count-in">28</span>
             </div>
         </div>
-        <div class="summary-card s-out">
-            <div class="summary-icon"><i class="bi bi-box-arrow-right"></i></div>
+        <div class="summary-card s-out" onclick="setFilter('out')">
+            <div class="summary-icon"><i class="bi bi-x-lg"></i></div>
             <div class="summary-info">
-                <div class="summary-label">OUTSIDE</div>
-                <div class="summary-count">26</div>
+                <span class="summary-label">Outside</span>
+                <span class="summary-count" id="count-out">12</span>
             </div>
         </div>
-        <div class="summary-card s-official">
+        <div class="summary-card s-official" onclick="setFilter('official')">
             <div class="summary-icon"><i class="bi bi-briefcase-fill"></i></div>
             <div class="summary-info">
-                <div class="summary-label">OFFICIAL</div>
-                <div class="summary-count">8</div>
+                <span class="summary-label">Official</span>
+                <span class="summary-count" id="count-official">5</span>
+            </div>
+        </div>
+        <div class="summary-card s-personal" onclick="setFilter('personal')">
+            <div class="summary-icon"><i class="bi bi-person-walking"></i></div>
+            <div class="summary-info">
+                <span class="summary-label">Personal</span>
+                <span class="summary-count" id="count-personal">4</span>
             </div>
         </div>
     </div>
 
-    <main class="tv-grid" id="main-grid">
-        <!-- Mock cards will be generated by JS -->
+    <main>
+        <div class="status-grid" id="main-grid">
+            <!-- Populated by JS -->
+        </div>
     </main>
 
     <a href="index.html" class="demo-back"><i class="bi bi-arrow-left me-2"></i>Exit TV Mode</a>
 
     <script>
-        function launchTV() {
-            const launcher = document.getElementById('launcher');
-            launcher.style.display = 'none';
+        const MOCK_EMPLOYEES = [
+            { id: 101, name: "DALISAY, Ricardo", dept: "Computer Science", pos: "Professor", status: "in", last: "07:45 AM" },
+            { id: 102, name: "CLARA, Maria", dept: "Registrar Dept", pos: "Staff", status: "official", last: "08:10 AM", remarks: "Liaison Duties" },
+            { id: 103, name: "LUNA, Juan", dept: "Art & Design", pos: "Faculty", status: "personal", last: "10:30 AM" },
+            { id: 104, name: "RIZAL, Jose", dept: "Health Sciences", pos: "Doctor", status: "exceeded", last: "09:15 AM" },
+            { id: 105, name: "BONIFACIO, Andres", dept: "Maintenance", pos: "Supervisor", status: "in", last: "06:30 AM" },
+            { id: 106, name: "MABINI, Apolinario", dept: "Legal Dept", pos: "Counsel", status: "official", last: "09:00 AM", remarks: "Court Hearing" },
+            { id: 107, name: "AQUINO, Melchora", dept: "Elem Dept", pos: "Principal", status: "in", last: "07:15 AM" },
+            { id: 108, name: "DEL PILAR, Gregorio", dept: "Security", pos: "Chief", status: "out", last: "04:30 PM" },
+            { id: 109, name: "AGUINALDO, Emilio", dept: "Admin", pos: "Executive", status: "in", last: "08:00 AM" },
+            { id: 110, name: "SILANG, Gabriela", dept: "HS Dept", pos: "Teacher", status: "personal", last: "11:20 AM" },
+            { id: 111, name: "LAPU-LAPU", dept: "Facility", pos: "Guard", status: "in", last: "06:00 AM" },
+            { id: 112, name: "SANTOS, Lope K.", dept: "Academics", pos: "Librarian", status: "official", last: "08:45 AM", remarks: "Seminar Trip" },
+            { id: 113, name: "BALAGTAS, Francisco", dept: "Language Dept", pos: "Faculty", status: "in", last: "07:55 AM" },
+            { id: 114, name: "ESCODA, Josefa", dept: "Nursing Dept", pos: "Instructor", status: "in", last: "07:30 AM" },
+            { id: 115, name: "MUNDO, Fe Del", dept: "Health Dept", pos: "Faculty", status: "official", last: "09:30 AM", remarks: "Patient Round" },
+            { id: 116, name: "ROMULO, Carlos", dept: "Foreign Lang", pos: "Professor", status: "in", last: "08:15 AM" },
+            { id: 117, name: "JOAQUIN, Nick", dept: "Arts Dept", pos: "Writer", status: "out", last: "05:00 PM" },
+            { id: 118, name: "OROSA, Maria", dept: "Science Dept", pos: "Scientist", status: "personal", last: "01:20 PM" },
+            { id: 119, name: "SILANG, Diego", dept: "HS Dept", pos: "Faculty", status: "in", last: "07:40 AM" },
+            { id: 120, name: "BURGOS, Jose", dept: "Theology", pos: "Faculty", status: "in", last: "08:10 AM" }
+        ];
+
+        // Fill up to 40 for the grid
+        for(let i=121; i<=140; i++) {
+            MOCK_EMPLOYEES.push({
+                id: i,
+                name: "Personnel " + i,
+                dept: "General Services",
+                pos: "Support Staff",
+                status: Math.random() > 0.7 ? "out" : "in",
+                last: "08:" + Math.floor(Math.random()*60).toString().padStart(2,'0') + " AM"
+            });
+        }
+
+        function startDemo() {
+            $('#launcher').fadeOut(500);
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen().catch(() => {});
+            }
+            renderCards();
+        }
+
+        function toggleTheme() {
+            const body = $('html');
+            const icon = $('#theme-icon');
+            if (body.attr('data-theme') === 'dark') {
+                body.attr('data-theme', 'light');
+                icon.removeClass('bi-sun-fill').addClass('bi-moon-stars-fill');
+            } else {
+                body.attr('data-theme', 'dark');
+                icon.removeClass('bi-moon-stars-fill').addClass('bi-sun-fill');
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
@@ -327,65 +403,76 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
-            document.getElementById('current-time').textContent = timeStr;
-            document.getElementById('current-date').textContent = dateStr;
+            $('#current-time').text(timeStr);
+            $('#current-date').text(dateStr);
         }
 
-        const names = [
-            "JUAN DELA CRUZ", "MARIA CLARA", "JOSE RIZAL", "ANDRES BONIFACIO", "APOLINARIO MABINI", 
-            "MELCHORA AQUINO", "GREGORIO DEL PILAR", "EMILIO AGUINALDO", "DIEGO SILANG", "GABRIELA SILANG",
-            "LAPU-LAPU", "GOMBURZA", "LOPE K. SANTOS", "FRANCISCO BALAGTAS", "JUAN LUNA", "JOSEFA LLANES ESCODA",
-            "FE DEL MUNDO", "MARIA OROSA", "CARLOS P. ROMULO", "NICK JOAQUIN"
-        ];
-        const depts = ["IT DEPT", "ACADEMICS", "FACILITY", "ADMIN", "FINANCE", "REGISTRAR", "COLLEGE", "HIGH SCHOOL"];
-
-        function generateCards() {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = '';
+        function setFilter(filter) {
+            $('body').removeClass('mode-personal mode-official mode-in mode-out');
+            $('.summary-card').removeClass('active');
             
-            for (let i = 0; i < 80; i++) {
-                const statusNum = Math.random();
-                let status = 'status-in';
-                let statusLabel = 'PRESENT';
-                if (statusNum < 0.2) { status = 'status-out'; statusLabel = 'OUT'; }
-                else if (statusNum < 0.3) { status = 'status-official'; statusLabel = 'OFFICIAL'; }
-
-                const name = names[Math.floor(Math.random() * names.length)] + (i > 19 ? " ("+(i+1)+")" : "");
-                const dept = depts[Math.floor(Math.random() * depts.length)];
-                
-                grid.innerHTML += `
-                    <div class="tv-card ${status}">
-                        <div class="profile-ring">
-                            <i class="bi bi-person-fill"></i>
-                        </div>
-                        <div class="tv-name">${name}</div>
-                        <div class="tv-dept">${dept}</div>
-                        
-                        <div class="time-popup">
-                            <div class="popup-row">
-                                <span class="popup-label">Status</span>
-                                <span class="popup-time" style="color: ${status === 'status-in' ? '#238636' : status === 'status-out' ? '#da3633' : '#1f6feb'};">${statusLabel}</span>
-                            </div>
-                            <div class="popup-row">
-                                <span class="popup-label">Time In</span>
-                                <span class="popup-time">07:45 AM</span>
-                            </div>
-                            <div class="popup-row">
-                                <span class="popup-label">Time Out</span>
-                                <span class="popup-time">${status === 'status-out' ? '04:30 PM' : '--:--'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            if (filter !== 'all') {
+                $('body').addClass('mode-' + filter);
+                $('.s-' + filter).addClass('active');
+            } else {
+                $('.s-total').addClass('active');
             }
         }
 
-        setInterval(updateClock, 1000);
-        updateClock();
-        generateCards();
+        function renderCards() {
+            const grid = $('#main-grid');
+            grid.empty();
+            
+            MOCK_EMPLOYEES.forEach((emp, index) => {
+                const statusLabel = emp.status.toUpperCase();
+                const icon = emp.status === 'in' ? '✅' : (emp.status === 'out' ? '❌' : (emp.status === 'official' ? '🔵' : '🟠'));
+                const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=f1f5f9&color=64748b&size=100`;
+                
+                let extraInfo = '';
+                if(emp.status === 'official') {
+                    extraInfo = `<div class="record-item"><span class="record-label" style="color:#58a6ff;">Assign</span><span class="record-time" style="font-size:0.6rem;">${emp.remarks}</span></div>`;
+                } else if (emp.status === 'personal' || emp.status === 'exceeded') {
+                    extraInfo = `<div class="record-item"><span class="record-label" style="color:#f97316;">Limit</span><span class="record-time">60 min</span></div>`;
+                }
 
-        // Optional: Refresh cards every minute to simulate "activity"
-        setInterval(generateCards, 60000);
+                const cardHtml = `
+                    <div class="emp-card status-${emp.status} animate-up" style="animation-delay: ${index * 0.05}s">
+                        <div class="profile-ring">
+                            <img src="${avatar}" class="profile-pic" alt="">
+                        </div>
+                        <div class="emp-name">${emp.name}</div>
+                        <div class="emp-dept">${emp.dept}</div>
+                        <div class="status-badge bg-${emp.status}">${icon} ${statusLabel}</div>
+                        <div class="time-label">${emp.last}</div>
+                        
+                        <div class="time-records-popup">
+                            <div class="record-item"><span class="record-label">In</span><span class="record-time">07:45 AM</span></div>
+                            <div class="record-item"><span class="record-label">Out</span><span class="record-time">${emp.status === 'out' ? emp.last : '--:--'}</span></div>
+                            ${extraInfo}
+                        </div>
+                    </div>
+                `;
+                grid.append(cardHtml);
+            });
+
+            // Update Counts
+            $('#count-total').text(MOCK_EMPLOYEES.length);
+            $('#count-in').text(MOCK_EMPLOYEES.filter(e => e.status === 'in').length);
+            $('#count-out').text(MOCK_EMPLOYEES.filter(e => e.status === 'out').length);
+            $('#count-official').text(MOCK_EMPLOYEES.filter(e => e.status === 'official').length);
+            $('#count-personal').text(MOCK_EMPLOYEES.filter(e => e.status === 'personal' || e.status === 'exceeded').length);
+        }
+
+        $(document).ready(() => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Check if user came from a specific page to auto-launch
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('autostart') === '1') {
+                startDemo();
+            }
+        });
     </script>
 </body>
 </html>
